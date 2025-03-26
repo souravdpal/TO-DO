@@ -8,6 +8,8 @@ const taskDueDateInput = document.getElementById('taskDueDate');
 const taskNotesInput = document.getElementById('taskNotes');
 const timerDisplay = document.getElementById('timerDisplay');
 const startButton = document.getElementById('startButton');
+const resetButton = document.getElementById('resetButton');
+const taskSelect = document.getElementById('taskSelect');
 const alertSound = document.getElementById('alertSound');
 const themeSelect = document.getElementById('themeSelect');
 const modeSelect = document.getElementById('modeSelect');
@@ -25,7 +27,7 @@ const addCategoryBtn = document.getElementById('addCategoryBtn');
 
 let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 let customCategories = JSON.parse(localStorage.getItem('customCategories')) || [];
-let currentTaskIndex = 0;
+let currentTaskIndex = -1;
 let timeLeft = 0;
 let timerInterval = null;
 let isBreak = false;
@@ -46,23 +48,27 @@ const mascotMessages = {
     default: {
         start: "🐾 Let’s do this!",
         break: "😺 Time for a break!",
-        done: "🎉 You’re the best!"
+        done: "🎉 You’re the best!",
+        waiting: "⏳ Waiting for you to start the next task!"
     },
     cute: {
         start: "🌸 You’re so kawaii! Let’s go!",
         break: "🍰 Take a sweet break!",
-        done: "💖 Yay, you’re a superstar!"
+        done: "💖 Yay, you’re a superstar!",
+        waiting: "🌟 Pick a task, cutie!"
     },
     motivation: {
         start: "💪 You’ve got this! Let’s crush it!",
         break: "🏋️ Recharge, then dominate!",
-        done: "🔥 Victory is yours!"
+        done: "🔥 Victory is yours!",
+        waiting: "⚡ Choose your next challenge!"
     }
 };
 
 // Load initial state
 loadCategories();
 renderTasks();
+updateTaskSelect();
 updateProgress();
 setSound();
 setTheme();
@@ -83,6 +89,7 @@ taskForm.addEventListener('submit', (e) => {
     tasks.push({ name, duration, category, priority, dueDate, notes, completed: false });
     saveTasks();
     renderTasks();
+    updateTaskSelect();
     taskNameInput.value = '';
     taskDurationInput.value = '';
     taskPriorityInput.value = '';
@@ -105,9 +112,29 @@ addCategoryBtn.addEventListener('click', () => {
 
 // Start timer
 startButton.addEventListener('click', () => {
-    if (tasks.length > 0 && !timerInterval) {
-        startTimer();
+    if (timerInterval) return; // Prevent starting if already running
+    const selectedTaskIndex = parseInt(taskSelect.value);
+    if (isNaN(selectedTaskIndex) || selectedTaskIndex < 0) {
+        alert("Please select a task to start!");
+        return;
     }
+    currentTaskIndex = selectedTaskIndex;
+    startTimer();
+    resetButton.disabled = false;
+});
+
+// Reset timer
+resetButton.addEventListener('click', () => {
+    clearInterval(timerInterval);
+    timerInterval = null;
+    timeLeft = 0;
+    isBreak = false;
+    currentTaskIndex = -1;
+    updateTimerDisplay();
+    const mode = modeSelect.value;
+    mascot.textContent = mascotMessages[mode].waiting;
+    startButton.disabled = false;
+    resetButton.disabled = true;
 });
 
 // Theme, mode, sound, and background switches
@@ -117,8 +144,14 @@ soundSelect.addEventListener('change', setSound);
 bgSelect.addEventListener('change', setBackground);
 
 // Sort and filter
-sortSelect.addEventListener('change', renderTasks);
-filterSelect.addEventListener('change', renderTasks);
+sortSelect.addEventListener('change', () => {
+    renderTasks();
+    updateTaskSelect();
+});
+filterSelect.addEventListener('change', () => {
+    renderTasks();
+    updateTaskSelect();
+});
 
 // Drag-and-Drop for Desktop
 taskList.addEventListener('dragstart', (e) => {
@@ -141,6 +174,7 @@ taskList.addEventListener('drop', (e) => {
         tasks.splice(toIndex, 0, movedTask);
         saveTasks();
         renderTasks();
+        updateTaskSelect();
     }
 });
 
@@ -187,6 +221,7 @@ taskList.addEventListener('touchend', (e) => {
             tasks.splice(toIndex, 0, movedTask);
             saveTasks();
             renderTasks();
+            updateTaskSelect();
         }
     }
     draggedItem = null;
@@ -204,6 +239,19 @@ function loadCategories() {
         option.textContent = category;
         taskCategorySelect.appendChild(option);
     });
+}
+
+function updateTaskSelect() {
+    taskSelect.innerHTML = '<option value="">Select a Task to Start</option>';
+    tasks.forEach((task, index) => {
+        if (!task.completed) {
+            const option = document.createElement('option');
+            option.value = index;
+            option.textContent = task.name;
+            taskSelect.appendChild(option);
+        }
+    });
+    startButton.disabled = tasks.every(task => task.completed);
 }
 
 function renderTasks() {
@@ -248,6 +296,7 @@ function renderTasks() {
             tasks.splice(tasks.indexOf(task), 1);
             saveTasks();
             renderTasks();
+            updateTaskSelect();
             updateProgress();
         };
         li.appendChild(deleteBtn);
@@ -256,18 +305,8 @@ function renderTasks() {
 }
 
 function startTimer() {
-    const nextTask = tasks.findIndex(t => !t.completed);
-    if (nextTask === -1) {
-        const mode = modeSelect.value;
-        timerDisplay.textContent = mascotMessages[mode].done;
-        mascot.textContent = mascotMessages[mode].done;
-        startButton.disabled = true;
-        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
-        if (voiceNotify.checked) speak("All tasks completed! You’re incredible!");
-        return;
-    }
+    if (currentTaskIndex < 0 || currentTaskIndex >= tasks.length) return;
 
-    currentTaskIndex = nextTask;
     if (pomodoroMode.checked && !isBreak) {
         timeLeft = 25 * 60;
     } else if (pomodoroMode.checked && isBreak) {
@@ -302,8 +341,15 @@ function startTimer() {
             }
             saveTasks();
             renderTasks();
+            updateTaskSelect();
             updateProgress();
-            setTimeout(startTimer, 1000);
+
+            // Wait for user to start the next task
+            currentTaskIndex = -1;
+            const mode = modeSelect.value;
+            mascot.textContent = mascotMessages[mode].waiting;
+            resetButton.disabled = true;
+            startButton.disabled = false;
         }
     }, 1000);
 }
@@ -311,7 +357,7 @@ function startTimer() {
 function updateTimerDisplay() {
     const minutes = Math.floor(timeLeft / 60);
     const seconds = timeLeft % 60;
-    const currentTask = tasks[currentTaskIndex] || { name: "None" };
+    const currentTask = currentTaskIndex >= 0 ? tasks[currentTaskIndex] : { name: "None" };
     timerDisplay.textContent = `${isBreak ? "Break" : "Task"}: ${isBreak ? "Rest" : currentTask.name} | Time Left: ${minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
 }
 
@@ -321,7 +367,13 @@ function updateProgress() {
     const percentage = total ? (completed / total) * 100 : 0;
     progressFill.style.width = `${percentage}%`;
     const mode = modeSelect.value;
-    mascot.textContent = percentage === 100 ? mascotMessages[mode].done : `${completed}/${total} done!`;
+    if (percentage === 100) {
+        mascot.textContent = mascotMessages[mode].done;
+        confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+        if (voiceNotify.checked) speak("All tasks completed! You’re incredible!");
+    } else {
+        mascot.textContent = `${completed}/${total} done!`;
+    }
 }
 
 function checkDueDates() {
@@ -358,7 +410,7 @@ function saveCategories() {
 }
 
 function setTheme() {
-    document.body.classList.remove('light', 'dark');
+    document.body.classList.remove('light', 'dark', 'redfire');
     document.body.classList.add(themeSelect.value);
 }
 
