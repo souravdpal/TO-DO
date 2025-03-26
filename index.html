@@ -20,9 +20,15 @@
                 <option value="home">Home 🏡</option>
             </select>
             <input type="number" id="taskPriority" placeholder="Stars (1-5)" min="1" max="5">
+            <input type="date" id="taskDueDate" placeholder="Due Date">
             <textarea id="taskNotes" placeholder="Notes (optional)"></textarea>
             <button type="submit">Add Me!</button>
         </form>
+        <div class="custom-categories">
+            <h3>Custom Categories</h3>
+            <input type="text" id="newCategory" placeholder="New Category">
+            <button id="addCategoryBtn">Add Category</button>
+        </div>
         <div class="controls">
             <button id="startButton" disabled>Start Timer</button>
             <label><input type="checkbox" id="pomodoroMode"> Pomodoro Mode</label>
@@ -45,6 +51,21 @@
                 <option value="cats">Cute Cats</option>
             </select>
             <label><input type="checkbox" id="voiceNotify"> Voice Alerts</label>
+            <label><input type="checkbox" id="notifyDue"> Due Date Alerts</label>
+        </div>
+        <div class="sort-filter">
+            <h3>Sort & Filter</h3>
+            <select id="sortSelect">
+                <option value="default">Default</option>
+                <option value="priority">Priority</option>
+                <option value="dueDate">Due Date</option>
+                <option value="category">Category</option>
+            </select>
+            <select id="filterSelect">
+                <option value="all">All Tasks</option>
+                <option value="completed">Completed</option>
+                <option value="incomplete">Incomplete</option>
+            </select>
         </div>
         <div id="progressBar">
             <div id="progressFill"></div>
