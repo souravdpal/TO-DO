@@ -4,6 +4,7 @@ const taskNameInput = document.getElementById('taskName');
 const taskDurationInput = document.getElementById('taskDuration');
 const taskCategorySelect = document.getElementById('taskCategory');
 const taskPriorityInput = document.getElementById('taskPriority');
+const taskDueDateInput = document.getElementById('taskDueDate');
 const taskNotesInput = document.getElementById('taskNotes');
 const timerDisplay = document.getElementById('timerDisplay');
 const startButton = document.getElementById('startButton');
@@ -14,10 +15,16 @@ const soundSelect = document.getElementById('soundSelect');
 const bgSelect = document.getElementById('bgSelect');
 const pomodoroMode = document.getElementById('pomodoroMode');
 const voiceNotify = document.getElementById('voiceNotify');
+const notifyDue = document.getElementById('notifyDue');
 const mascot = document.getElementById('mascot');
 const progressFill = document.getElementById('progressFill');
+const sortSelect = document.getElementById('sortSelect');
+const filterSelect = document.getElementById('filterSelect');
+const newCategoryInput = document.getElementById('newCategory');
+const addCategoryBtn = document.getElementById('addCategoryBtn');
 
 let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+let customCategories = JSON.parse(localStorage.getItem('customCategories')) || [];
 let currentTaskIndex = 0;
 let timeLeft = 0;
 let timerInterval = null;
@@ -54,12 +61,14 @@ const mascotMessages = {
 };
 
 // Load initial state
+loadCategories();
 renderTasks();
 updateProgress();
 setSound();
 setTheme();
 setMode();
 setBackground();
+checkDueDates();
 
 // Form submission
 taskForm.addEventListener('submit', (e) => {
@@ -68,17 +77,30 @@ taskForm.addEventListener('submit', (e) => {
     let duration = parseInt(taskDurationInput.value) * 60;
     const category = taskCategorySelect.value;
     const priority = parseInt(taskPriorityInput.value) || 0;
+    const dueDate = taskDueDateInput.value;
     const notes = taskNotesInput.value;
     if (pomodoroMode.checked) duration = 25 * 60;
-    tasks.push({ name, duration, category, priority, notes, completed: false });
+    tasks.push({ name, duration, category, priority, dueDate, notes, completed: false });
     saveTasks();
     renderTasks();
     taskNameInput.value = '';
     taskDurationInput.value = '';
     taskPriorityInput.value = '';
+    taskDueDateInput.value = '';
     taskNotesInput.value = '';
     startButton.disabled = false;
     updateProgress();
+});
+
+// Add custom category
+addCategoryBtn.addEventListener('click', () => {
+    const newCategory = newCategoryInput.value.trim();
+    if (newCategory && !customCategories.includes(newCategory)) {
+        customCategories.push(newCategory);
+        saveCategories();
+        loadCategories();
+        newCategoryInput.value = '';
+    }
 });
 
 // Start timer
@@ -93,6 +115,10 @@ themeSelect.addEventListener('change', setTheme);
 modeSelect.addEventListener('change', setMode);
 soundSelect.addEventListener('change', setSound);
 bgSelect.addEventListener('change', setBackground);
+
+// Sort and filter
+sortSelect.addEventListener('change', renderTasks);
+filterSelect.addEventListener('change', renderTasks);
 
 // Drag-and-Drop for Desktop
 taskList.addEventListener('dragstart', (e) => {
@@ -166,20 +192,60 @@ taskList.addEventListener('touchend', (e) => {
     draggedItem = null;
 });
 
+function loadCategories() {
+    taskCategorySelect.innerHTML = `
+        <option value="work">Work 📝</option>
+        <option value="fun">Fun 🎉</option>
+        <option value="home">Home 🏡</option>
+    `;
+    customCategories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category.toLowerCase();
+        option.textContent = category;
+        taskCategorySelect.appendChild(option);
+    });
+}
+
 function renderTasks() {
+    let filteredTasks = [...tasks];
+
+    // Filter tasks
+    const filter = filterSelect.value;
+    if (filter === 'completed') {
+        filteredTasks = filteredTasks.filter(task => task.completed);
+    } else if (filter === 'incomplete') {
+        filteredTasks = filteredTasks.filter(task => !task.completed);
+    }
+
+    // Sort tasks
+    const sort = sortSelect.value;
+    if (sort === 'priority') {
+        filteredTasks.sort((a, b) => (b.priority || 0) - (a.priority || 0));
+    } else if (sort === 'dueDate') {
+        filteredTasks.sort((a, b) => {
+            const dateA = a.dueDate ? new Date(a.dueDate) : new Date('9999-12-31');
+            const dateB = b.dueDate ? new Date(b.dueDate) : new Date('9999-12-31');
+            return dateA - dateB;
+        });
+    } else if (sort === 'category') {
+        filteredTasks.sort((a, b) => a.category.localeCompare(b.category));
+    }
+
+    // Render tasks
     taskList.innerHTML = '';
-    tasks.forEach((task, index) => {
+    filteredTasks.forEach((task, index) => {
         const li = document.createElement('li');
         li.draggable = true;
         li.dataset.index = index;
-        const stars = '★'.repeat(task.priority) + '☆'.repeat(5 - task.priority);
-        li.textContent = `${categoryIcons[task.category]} ${task.name} - ${task.duration / 60} min ${stars}`;
+        const stars = '★'.repeat(task.priority || 0) + '☆'.repeat(5 - (task.priority || 0));
+        const dueDateText = task.dueDate ? `Due: ${task.dueDate}` : '';
+        li.textContent = `${categoryIcons[task.category] || '📌'} ${task.name} - ${task.duration / 60} min ${stars} ${dueDateText}`;
         if (task.notes) li.title = task.notes;
         if (task.completed) li.classList.add('completed');
         const deleteBtn = document.createElement('button');
         deleteBtn.textContent = 'X';
         deleteBtn.onclick = () => {
-            tasks.splice(index, 1);
+            tasks.splice(tasks.indexOf(task), 1);
             saveTasks();
             renderTasks();
             updateProgress();
@@ -258,8 +324,37 @@ function updateProgress() {
     mascot.textContent = percentage === 100 ? mascotMessages[mode].done : `${completed}/${total} done!`;
 }
 
+function checkDueDates() {
+    if (!notifyDue.checked || !("Notification" in window)) return;
+
+    if (Notification.permission !== "granted") {
+        Notification.requestPermission();
+    }
+
+    tasks.forEach(task => {
+        if (task.dueDate && !task.completed) {
+            const dueDate = new Date(task.dueDate);
+            const now = new Date();
+            if (dueDate <= now) {
+                if (Notification.permission === "granted") {
+                    new Notification(`Task Due: ${task.name}`, {
+                        body: `Your task "${task.name}" was due on ${task.dueDate}!`,
+                        icon: 'https://cdn-icons-png.flaticon.com/512/3069/3069171.png'
+                    });
+                }
+            }
+        }
+    });
+
+    setTimeout(checkDueDates, 60000); // Check every minute
+}
+
 function saveTasks() {
     localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+function saveCategories() {
+    localStorage.setItem('customCategories', JSON.stringify(customCategories));
 }
 
 function setTheme() {
