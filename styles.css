@@ -2,18 +2,20 @@ body {
     font-family: 'Comic Neue', cursive;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     margin: 0;
     padding: 0;
     min-height: 100vh;
     width: 100vw;
     transition: background 0.3s, color 0.3s;
     background-size: cover;
-    overflow: auto;
+    background-attachment: fixed;
+    overflow-y: auto;
+    box-sizing: border-box;
 }
 
 body.full-screen {
-    height: 100vh;
+    height: 100%;
 }
 
 /* Default Mode (Light/Dark) */
@@ -63,17 +65,22 @@ body.dark.cats, body.cute.dark.cats, body.motivation.dark.cats {
 }
 
 .container {
-    width: 650px;
-    max-width: 90%;
+    width: 100%;
+    max-width: 900px; /* Wider for PC */
+    min-height: calc(100vh - 40px);
     margin: 20px auto;
     text-align: center;
-    padding: 20px;
+    padding: 30px;
     border-radius: 25px;
     transition: background-color 0.3s, box-shadow 0.3s;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 body.light .container {
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.95);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
@@ -83,7 +90,7 @@ body.dark .container {
 }
 
 body.cute .container {
-    background-color: rgba(255, 245, 250, 0.9);
+    background-color: rgba(255, 245, 250, 0.95);
     box-shadow: 0 4px 15px rgba(255, 182, 193, 0.3);
     border: 2px solid #ffb6c1;
 }
@@ -95,7 +102,7 @@ body.cute.dark .container {
 }
 
 body.motivation .container {
-    background-color: rgba(245, 245, 245, 0.9);
+    background-color: rgba(245, 245, 245, 0.95);
     box-shadow: 0 4px 15px rgba(0, 191, 255, 0.3);
     border: 2px solid #00b7eb;
 }
@@ -107,58 +114,68 @@ body.motivation.dark .container {
 }
 
 h1 {
-    font-size: 2.5em;
+    font-size: 2.8em;
     margin-bottom: 20px;
+    line-height: 1.2;
 }
 
-body.light h1 {
+h3 {
+    font-size: 1.5em;
+    margin: 10px 0;
+}
+
+body.light h1, body.light h3 {
     color: #ff85a2;
     text-shadow: 1px 1px 2px #ffd1dc;
 }
 
-body.dark h1 {
+body.dark h1, body.dark h3 {
     color: #ff6f91;
     text-shadow: 1px 1px 3px rgba(255, 111, 145, 0.5);
 }
 
-body.cute h1 {
+body.cute h1, body.cute h3 {
     color: #ff69b4;
     text-shadow: 1px 1px 2px #ffccdd;
 }
 
-body.cute.dark h1 {
+body.cute.dark h1, body.cute.dark h3 {
     color: #ff9aa2;
     text-shadow: 1px 1px 3px rgba(255, 154, 162, 0.5);
 }
 
-body.motivation h1 {
+body.motivation h1, body.motivation h3 {
     color: #00b7eb;
     text-shadow: 1px 1px 2px #b3e5fc;
 }
 
-body.motivation.dark h1 {
+body.motivation.dark h1, body.motivation.dark h3 {
     color: #00d4ff;
     text-shadow: 1px 1px 3px rgba(0, 212, 255, 0.5);
 }
 
 form {
     margin: 20px 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 input, select, textarea {
-    padding: 8px;
-    margin: 5px;
+    padding: 10px;
+    margin: 5px 0;
     border-radius: 15px;
     font-size: 1.1em;
     transition: border-color 0.3s, background-color 0.3s;
-    width: 100%; /* Full width on mobile */
+    width: 100%;
     box-sizing: border-box;
 }
 
 textarea {
     width: 100%;
     resize: none;
-    height: 50px;
+    height: 60px;
 }
 
 body.light input, body.light select, body.light textarea {
@@ -215,14 +232,14 @@ body.motivation input:focus, body.motivation select:focus, body.motivation texta
 }
 
 button {
-    padding: 8px 15px;
+    padding: 10px 20px;
     color: white;
     border: none;
     border-radius: 15px;
     cursor: pointer;
     font-size: 1.1em;
     transition: transform 0.2s, background-color 0.3s;
-    width: 100%; /* Full width on mobile */
+    width: 100%;
     margin: 5px 0;
 }
 
@@ -276,11 +293,21 @@ body.dark button:disabled, body.cute.dark button:disabled, body.motivation.dark 
 }
 
 .controls {
-    margin: 10px 0;
+    margin: 20px 0;
     display: flex;
     justify-content: center;
     gap: 10px;
     flex-wrap: wrap;
+    width: 100%;
+}
+
+.custom-categories, .sort-filter {
+    margin: 20px 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
 }
 
 label {
@@ -305,8 +332,8 @@ body.motivation label {
 
 #progressBar {
     width: 100%;
-    height: 12px;
-    border-radius: 6px;
+    height: 15px;
+    border-radius: 8px;
     margin: 10px 0;
     overflow: hidden;
 }
@@ -352,6 +379,7 @@ body.motivation #progressFill {
 ul {
     list-style-type: none;
     padding: 0;
+    width: 100%;
     min-height: 50px;
 }
 
@@ -361,11 +389,12 @@ li {
     border-radius: 15px;
     display: flex;
     justify-content: space-between;
+    align-items: center;
     font-size: 1.2em;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     cursor: move;
     transition: transform 0.2s;
-    touch-action: manipulation; /* Improve touch dragging */
+    touch-action: manipulation;
 }
 
 body.light li {
@@ -455,6 +484,8 @@ body.motivation li button {
     font-size: 1.5em;
     padding: 10px;
     border-radius: 10px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 body.light #timerDisplay {
@@ -494,7 +525,7 @@ body.motivation.dark #timerDisplay {
 }
 
 #mascot {
-    margin-top: 20px;
+    margin: 20px 0;
     font-size: 1.2em;
     animation: bounce 2s infinite;
 }
@@ -521,29 +552,34 @@ body.motivation #mascot {
     60% { transform: translateY(-5px); }
 }
 
-/* Media Queries for Mobile Responsiveness */
+/* Media Queries for Responsiveness */
 @media (max-width: 768px) {
     h1 {
-        font-size: 1.8em; /* Smaller heading on mobile */
+        font-size: 2em;
+    }
+
+    h3 {
+        font-size: 1.2em;
     }
 
     .container {
         padding: 15px;
         margin: 10px auto;
+        max-width: 100%;
     }
 
     input, select, textarea {
-        font-size: 0.9em; /* Smaller font for inputs */
-        padding: 6px;
+        font-size: 0.9em;
+        padding: 8px;
     }
 
     button {
         font-size: 0.9em;
-        padding: 6px 10px;
+        padding: 8px 15px;
     }
 
-    .controls {
-        flex-direction: column; /* Stack controls vertically */
+    .controls, .custom-categories, .sort-filter {
+        flex-direction: column;
         gap: 5px;
     }
 
@@ -552,7 +588,7 @@ body.motivation #mascot {
     }
 
     li {
-        font-size: 1em; /* Smaller task font */
+        font-size: 1em;
         padding: 8px;
     }
 
@@ -576,18 +612,22 @@ body.motivation #mascot {
         font-size: 1.5em;
     }
 
+    h3 {
+        font-size: 1em;
+    }
+
     .container {
         padding: 10px;
     }
 
     input, select, textarea {
         font-size: 0.8em;
-        padding: 5px;
+        padding: 6px;
     }
 
     button {
         font-size: 0.8em;
-        padding: 5px 8px;
+        padding: 6px 10px;
     }
 
     li {
