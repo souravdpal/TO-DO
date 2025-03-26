@@ -22,6 +22,7 @@ let currentTaskIndex = 0;
 let timeLeft = 0;
 let timerInterval = null;
 let isBreak = false;
+let draggedItem = null;
 
 const soundOptions = {
     beep: 'https://www.soundjay.com/buttons/beep-01a.mp3',
@@ -93,10 +94,13 @@ modeSelect.addEventListener('change', setMode);
 soundSelect.addEventListener('change', setSound);
 bgSelect.addEventListener('change', setBackground);
 
-// Drag-and-drop
+// Drag-and-Drop for Desktop
 taskList.addEventListener('dragstart', (e) => {
     const li = e.target.closest('li');
-    if (li) e.dataTransfer.setData('text/plain', li.dataset.index);
+    if (li) {
+        draggedItem = li;
+        e.dataTransfer.setData('text/plain', li.dataset.index);
+    }
 });
 
 taskList.addEventListener('dragover', (e) => e.preventDefault());
@@ -112,6 +116,54 @@ taskList.addEventListener('drop', (e) => {
         saveTasks();
         renderTasks();
     }
+});
+
+// Touch Events for Mobile Drag-and-Drop
+let touchStartY = 0;
+let touchStartX = 0;
+let touchMoved = false;
+
+taskList.addEventListener('touchstart', (e) => {
+    const li = e.target.closest('li');
+    if (li) {
+        draggedItem = li;
+        touchStartY = e.touches[0].clientY;
+        touchStartX = e.touches[0].clientX;
+        touchMoved = false;
+        li.style.opacity = '0.5';
+    }
+});
+
+taskList.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    if (!draggedItem) return;
+    touchMoved = true;
+    const touch = e.touches[0];
+    const offsetY = touch.clientY - touchStartY;
+    const offsetX = touch.clientX - touchStartX;
+    draggedItem.style.transform = `translate(${offsetX}px, ${offsetY}px)`;
+});
+
+taskList.addEventListener('touchend', (e) => {
+    if (!draggedItem) return;
+    draggedItem.style.opacity = '1';
+    draggedItem.style.transform = 'none';
+
+    if (touchMoved) {
+        const fromIndex = draggedItem.dataset.index;
+        const touch = e.changedTouches[0];
+        const dropTarget = document.elementFromPoint(touch.clientX, touch.clientY);
+        const toLi = dropTarget ? dropTarget.closest('li') : null;
+
+        if (toLi && toLi !== draggedItem) {
+            const toIndex = toLi.dataset.index;
+            const [movedTask] = tasks.splice(fromIndex, 1);
+            tasks.splice(toIndex, 0, movedTask);
+            saveTasks();
+            renderTasks();
+        }
+    }
+    draggedItem = null;
 });
 
 function renderTasks() {
@@ -218,7 +270,7 @@ function setTheme() {
 function setMode() {
     document.body.classList.remove('default', 'cute', 'motivation');
     document.body.classList.add(modeSelect.value);
-    updateProgress(); // Update mascot message based on mode
+    updateProgress();
 }
 
 function setSound() {
