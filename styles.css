@@ -1,0 +1,517 @@
+body {
+    font-family: 'Comic Neue', cursive;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    width: 100vw;
+    transition: background 0.3s, color 0.3s;
+    background-size: cover;
+    overflow: auto;
+}
+
+body.full-screen {
+    height: 100vh;
+}
+
+/* Default Mode (Light/Dark) */
+body.light {
+    background-color: #fff0f5;
+}
+
+body.dark {
+    background-color: #1a1a2e;
+}
+
+/* Cute Mode */
+body.cute {
+    background-color: #ffe6f0;
+    font-family: 'Comic Neue', cursive;
+}
+
+body.cute.dark {
+    background-color: #2e2e4a;
+}
+
+/* Motivation Mode */
+body.motivation {
+    background-color: #f5f5f5;
+    font-family: 'Roboto', sans-serif;
+}
+
+body.motivation.dark {
+    background-color: #1f2a44;
+}
+
+/* Backgrounds */
+body.stars {
+    background: url('https://i.imgur.com/5z5z5z5.jpg') no-repeat center fixed;
+}
+
+body.cats {
+    background: url('https://i.imgur.com/8z8z8z8.jpg') no-repeat center fixed;
+}
+
+body.dark.stars, body.cute.dark.stars, body.motivation.dark.stars {
+    background-color: #0f0f1a;
+}
+
+body.dark.cats, body.cute.dark.cats, body.motivation.dark.cats {
+    background-color: #0f0f1a;
+}
+
+.container {
+    width: 650px;
+    max-width: 90%;
+    margin: 20px auto;
+    text-align: center;
+    padding: 30px;
+    border-radius: 25px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+body.light .container {
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+body.dark .container {
+    background-color: rgba(34, 34, 54, 0.95);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+body.cute .container {
+    background-color: rgba(255, 245, 250, 0.9);
+    box-shadow: 0 4px 15px rgba(255, 182, 193, 0.3);
+    border: 2px solid #ffb6c1;
+}
+
+body.cute.dark .container {
+    background-color: rgba(46, 46, 74, 0.95);
+    box-shadow: 0 4px 20px rgba(255, 105, 180, 0.2);
+    border: 2px solid #ff69b4;
+}
+
+body.motivation .container {
+    background-color: rgba(245, 245, 245, 0.9);
+    box-shadow: 0 4px 15px rgba(0, 191, 255, 0.3);
+    border: 2px solid #00b7eb;
+}
+
+body.motivation.dark .container {
+    background-color: rgba(31, 42, 68, 0.95);
+    box-shadow: 0 4px 20px rgba(0, 191, 255, 0.4);
+    border: 2px solid #00d4ff;
+}
+
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+body.light h1 {
+    color: #ff85a2;
+    text-shadow: 1px 1px 2px #ffd1dc;
+}
+
+body.dark h1 {
+    color: #ff6f91;
+    text-shadow: 1px 1px 3px rgba(255, 111, 145, 0.5);
+}
+
+body.cute h1 {
+    color: #ff69b4;
+    text-shadow: 1px 1px 2px #ffccdd;
+}
+
+body.cute.dark h1 {
+    color: #ff9aa2;
+    text-shadow: 1px 1px 3px rgba(255, 154, 162, 0.5);
+}
+
+body.motivation h1 {
+    color: #00b7eb;
+    text-shadow: 1px 1px 2px #b3e5fc;
+}
+
+body.motivation.dark h1 {
+    color: #00d4ff;
+    text-shadow: 1px 1px 3px rgba(0, 212, 255, 0.5);
+}
+
+form {
+    margin: 20px 0;
+}
+
+input, select, textarea {
+    padding: 8px;
+    margin: 5px;
+    border-radius: 15px;
+    font-size: 1.1em;
+    transition: border-color 0.3s, background-color 0.3s;
+}
+
+textarea {
+    width: 80%;
+    resize: none;
+    height: 50px;
+}
+
+body.light input, body.light select, body.light textarea {
+    border: 2px solid #ffb6c1;
+    background-color: #fffafa;
+    color: #333;
+}
+
+body.dark input, body.dark select, body.dark textarea {
+    border: 2px solid #ff6f91;
+    background-color: #2e2e4a;
+    color: #e0e0ff;
+}
+
+body.cute input, body.cute select, body.cute textarea {
+    border: 2px solid #ffccdd;
+    background-color: #fff0f5;
+    color: #ff69b4;
+}
+
+body.cute.dark input, body.cute.dark select, body.cute.dark textarea {
+    border: 2px solid #ff9aa2;
+    background-color: #3a3a5a;
+    color: #ffd1dc;
+}
+
+body.motivation input, body.motivation select, body.motivation textarea {
+    border: 2px solid #00b7eb;
+    background-color: #e6f7fa;
+    color: #0077b6;
+}
+
+body.motivation.dark input, body.motivation.dark select, body.motivation.dark textarea {
+    border: 2px solid #00d4ff;
+    background-color: #2a3d66;
+    color: #b3e5fc;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #ff69b4;
+}
+
+body.dark input:focus, body.dark select:focus, body.dark textarea:focus {
+    border-color: #ff9aa2;
+}
+
+body.cute input:focus, body.cute select:focus, body.cute textarea:focus {
+    border-color: #ff85a2;
+}
+
+body.motivation input:focus, body.motivation select:focus, body.motivation textarea:focus {
+    border-color: #00d4ff;
+}
+
+button {
+    padding: 8px 15px;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: transform 0.2s, background-color 0.3s;
+}
+
+body.light button {
+    background-color: #ff69b4;
+}
+
+body.dark button {
+    background-color: #ff6f91;
+}
+
+body.cute button {
+    background-color: #ff85a2;
+}
+
+body.cute.dark button {
+    background-color: #ff9aa2;
+}
+
+body.motivation button {
+    background-color: #00b7eb;
+}
+
+body.motivation.dark button {
+    background-color: #00d4ff;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
+
+body.dark button:hover {
+    background-color: #ff9aa2;
+}
+
+body.cute button:hover {
+    background-color: #ff9aa2;
+}
+
+body.motivation button:hover {
+    background-color: #00d4ff;
+}
+
+button:disabled {
+    background-color: #d3d3d3;
+    transform: none;
+}
+
+body.dark button:disabled, body.cute.dark button:disabled, body.motivation.dark button:disabled {
+    background-color: #4a4a6a;
+}
+
+.controls {
+    margin: 10px 0;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+label {
+    margin: 0 10px;
+}
+
+body.light label {
+    color: #ff85a2;
+}
+
+body.dark label {
+    color: #ff9aa2;
+}
+
+body.cute label {
+    color: #ff69b4;
+}
+
+body.motivation label {
+    color: #00b7eb;
+}
+
+#progressBar {
+    width: 100%;
+    height: 12px;
+    border-radius: 6px;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+body.light #progressBar {
+    background-color: #f0e6f6;
+}
+
+body.dark #progressBar {
+    background-color: #3a3a5a;
+}
+
+body.cute #progressBar {
+    background-color: #ffd1dc;
+}
+
+body.motivation #progressBar {
+    background-color: #b3e5fc;
+}
+
+#progressFill {
+    height: 100%;
+    width: 0;
+    transition: width 0.5s ease;
+}
+
+body.light #progressFill {
+    background-color: #ff69b4;
+}
+
+body.dark #progressFill {
+    background-color: #ff6f91;
+}
+
+body.cute #progressFill {
+    background-color: #ff85a2;
+}
+
+body.motivation #progressFill {
+    background-color: #00b7eb;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    min-height: 50px;
+}
+
+li {
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 15px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.2em;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    cursor: move;
+    transition: transform 0.2s;
+}
+
+body.light li {
+    background-color: #f0e6f6;
+    color: #6a5acd;
+}
+
+body.dark li {
+    background-color: #2e2e4a;
+    color: #e0e0ff;
+}
+
+body.cute li {
+    background-color: #fff0f5;
+    color: #ff69b4;
+    border: 1px dashed #ffccdd;
+}
+
+body.cute.dark li {
+    background-color: #3a3a5a;
+    color: #ffd1dc;
+    border: 1px dashed #ff9aa2;
+}
+
+body.motivation li {
+    background-color: #e6f7fa;
+    color: #0077b6;
+    font-weight: bold;
+}
+
+body.motivation.dark li {
+    background-color: #2a3d66;
+    color: #b3e5fc;
+}
+
+li.completed {
+    text-decoration: line-through;
+}
+
+body.light li.completed {
+    background-color: #d3ffd3;
+    color: #2e8b57;
+}
+
+body.dark li.completed {
+    background-color: #2e8b57;
+    color: #d3ffd3;
+}
+
+body.cute li.completed {
+    background-color: #e0fff0;
+    color: #ff85a2;
+}
+
+body.motivation li.completed {
+    background-color: #b3e5fc;
+    color: #0077b6;
+}
+
+li:hover {
+    transform: scale(1.02);
+}
+
+li button {
+    padding: 5px 10px;
+    font-size: 0.9em;
+}
+
+body.light li button {
+    background-color: #ff4040;
+}
+
+body.dark li button {
+    background-color: #ff5555;
+}
+
+body.cute li button {
+    background-color: #ff69b4;
+}
+
+body.motivation li button {
+    background-color: #ff5555;
+}
+
+#timerDisplay {
+    margin: 20px 0;
+    font-size: 1.5em;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+body.light #timerDisplay {
+    color: #ff69b4;
+    background-color: #fff0f5;
+    border: 2px dashed #ffb6c1;
+}
+
+body.dark #timerDisplay {
+    color: #ff9aa2;
+    background-color: #2e2e4a;
+    border: 2px dashed #ff6f91;
+}
+
+body.cute #timerDisplay {
+    color: #ff85a2;
+    background-color: #fff0f5;
+    border: 2px dashed #ffccdd;
+}
+
+body.cute.dark #timerDisplay {
+    color: #ffd1dc;
+    background-color: #3a3a5a;
+    border: 2px dashed #ff9aa2;
+}
+
+body.motivation #timerDisplay {
+    color: #00b7eb;
+    background-color: #e6f7fa;
+    border: 2px solid #00d4ff;
+}
+
+body.motivation.dark #timerDisplay {
+    color: #00d4ff;
+    background-color: #2a3d66;
+    border: 2px solid #00b7eb;
+}
+
+#mascot {
+    margin-top: 20px;
+    font-size: 1.2em;
+    animation: bounce 2s infinite;
+}
+
+body.light #mascot {
+    color: #ff69b4;
+}
+
+body.dark #mascot {
+    color: #ff9aa2;
+}
+
+body.cute #mascot {
+    color: #ff85a2;
+}
+
+body.motivation #mascot {
+    color: #00b7eb;
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+}

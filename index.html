@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magical To-Do List</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Roboto:wght@700&display=swap" rel="stylesheet">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3069/3069171.png" type="image/png">
+</head>
+<body class="full-screen">
+    <div class="container">
+        <h1>Magical To-Do List ฅ^•ﻌ•^ฅ</h1>
+        <form id="taskForm">
+            <input type="text" id="taskName" placeholder="What to do?" required>
+            <input type="number" id="taskDuration" placeholder="Minutes" min="1" required>
+            <select id="taskCategory">
+                <option value="work">Work 📝</option>
+                <option value="fun">Fun 🎉</option>
+                <option value="home">Home 🏡</option>
+            </select>
+            <input type="number" id="taskPriority" placeholder="Stars (1-5)" min="1" max="5">
+            <textarea id="taskNotes" placeholder="Notes (optional)"></textarea>
+            <button type="submit">Add Me!</button>
+        </form>
+        <div class="controls">
+            <button id="startButton" disabled>Start Timer</button>
+            <label><input type="checkbox" id="pomodoroMode"> Pomodoro Mode</label>
+            <select id="themeSelect">
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+            </select>
+            <select id="modeSelect">
+                <option value="default">Default Mode</option>
+                <option value="cute">Cute Mode</option>
+                <option value="motivation">Motivation Mode</option>
+            </select>
+            <select id="soundSelect">
+                <option value="beep">Beep</option>
+                <option value="meow">Meow</option>
+            </select>
+            <select id="bgSelect">
+                <option value="default">Default</option>
+                <option value="stars">Starry Sky</option>
+                <option value="cats">Cute Cats</option>
+            </select>
+            <label><input type="checkbox" id="voiceNotify"> Voice Alerts</label>
+        </div>
+        <div id="progressBar">
+            <div id="progressFill"></div>
+        </div>
+        <ul id="taskList" draggable="true"></ul>
+        <div id="timerDisplay">Current Task: None | Time Left: 0:00</div>
+        <div id="mascot">🐾 Hi, I’m your helper!</div>
+    </div>
+    <audio id="alertSound"></audio>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
